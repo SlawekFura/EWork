@@ -38,7 +38,7 @@ uint8_t * pSendSPI[4] = sendToGyro;
 void getDataACC(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pDataGet uint32_t Timeout);
 void getDataSPI(SPI_HandleTypeDef *hspi, uint8_t * RegAddress, uint8_t *pDataGet uint32_t Timeout);
 
-//void getDataGYRO(   )
+
 
 void initAccI2C();
 void initGyroSPI();
