@@ -82,22 +82,22 @@ static void MX_SPI1_Init(void);
 #define L3GD20_Z_H_A 0x2D // wyzszy bajt danych osi Z
 #define L3GD20_WHO_AM_I 0x0F
 
-struct SPI_L3GD20{
-	uint8_t REG_CTRL_REG1_llkA_WRITE = 0x00100000;
-	uint8_t * pREG_CTRL_REG1_A_WRITE = &REG_CTRL_REG1_A_WRITE;
-
-	uint8_t REG_CTRL_REG1_A_READ = 0x10100000;
-	uint8_t * pREG_CTRL_REG1_A_READ = &REG_CTRL_REG1_A_READ;
-
-	uint8_t WHO_AM_I_READ = 0b10001111;
-	uint8_t * pWHO_AM_I_READ = &WHO_AM_I_READ;
-
-	uint8_t Settings = 0b01101111;
-	uint8_t * pSettings = &Settings;
-
-	uint8_t AxisZVal;
-	uint8_t * pAxisZVal;
-};
+//struct SPI_L3GD20{
+//	uint8_t REG_CTRL_REG1_llkA_WRITE = 0x00100000;
+//	uint8_t * pREG_CTRL_REG1_A_WRITE = &REG_CTRL_REG1_A_WRITE;
+//
+//	uint8_t REG_CTRL_REG1_A_READ = 0x10100000;
+//	uint8_t * pREG_CTRL_REG1_A_READ = &REG_CTRL_REG1_A_READ;
+//
+//	uint8_t WHO_AM_I_READ = 0b10001111;
+//	uint8_t * pWHO_AM_I_READ = &WHO_AM_I_READ;
+//
+//	uint8_t Settings = 0b01101111;
+//	uint8_t * pSettings = &Settings;
+//
+//	uint8_t AxisZVal;
+//	uint8_t * pAxisZVal;
+//};
 /* USER CODE END 0 */
 
 int main(void)
