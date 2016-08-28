@@ -35,6 +35,7 @@
 
 /* USER CODE BEGIN Includes */
 #include <math.h>
+#include "I2C_SPI.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -44,7 +45,9 @@ float Zaxis_g = 0;
 float retAccel = 0;
 double ang;
 int16_t angVelocity;
-
+int16_t DataGetXAxis;
+int16_t DataGetYAxis;
+int16_t DataGetZAxis;
 
 SPI_HandleTypeDef hspi1;
 
@@ -82,22 +85,6 @@ static void MX_SPI1_Init(void);
 #define L3GD20_Z_H_A 0x2D // wyzszy bajt danych osi Z
 #define L3GD20_WHO_AM_I 0x0F
 
-//struct SPI_L3GD20{
-//	uint8_t REG_CTRL_REG1_llkA_WRITE = 0x00100000;
-//	uint8_t * pREG_CTRL_REG1_A_WRITE = &REG_CTRL_REG1_A_WRITE;
-//
-//	uint8_t REG_CTRL_REG1_A_READ = 0x10100000;
-//	uint8_t * pREG_CTRL_REG1_A_READ = &REG_CTRL_REG1_A_READ;
-//
-//	uint8_t WHO_AM_I_READ = 0b10001111;
-//	uint8_t * pWHO_AM_I_READ = &WHO_AM_I_READ;
-//
-//	uint8_t Settings = 0b01101111;
-//	uint8_t * pSettings = &Settings;
-//
-//	uint8_t AxisZVal;
-//	uint8_t * pAxisZVal;
-//};
 /* USER CODE END 0 */
 
 int main(void)
@@ -122,25 +109,31 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 
-  uint8_t Settings = LSM303_ACC_Z_ENABLE | LSM303_ACC_100HZ;
-  uint8_t SettingsGyro =  0b01101111;
-
-  HAL_I2C_Mem_Write(&hi2c1, LSM303_ACC_ADDRESS, LSM303_ACC_CTRL_REG1_A, 1, &Settings, 1, 100);
-
-  uint8_t sendToGyro[4]={L3GD20_CTRL_REG1_A, SettingsGyro, L3GD20_Z_H_A | 128, L3GD20_WHO_AM_I | 128};
-  uint8_t *sendData = sendToGyro;
-  uint8_t getFromGyro = 0;
-  uint8_t *getData = &getFromGyro;
+//  uint8_t Settings = LSM303_ACC_Z_ENABLE | LSM303_ACC_100HZ;
+//  uint8_t SettingsGyro =  0b01101111;
+//
+//  HAL_I2C_Mem_Write(&hi2c1, LSM303_ACC_ADDRESS, LSM303_ACC_CTRL_REG1_A, 1, &Settings, 1, 100);
+//
+//  //uint8_t sendToGyro[5]={L3GD20_CTRL_REG1_A, SettingsGyro, L3GD20_Z_H_A | 128, L3GD20_WHO_AM_I | 128, 	L3GD20_GYRO_X_L | 128 | L3GD20_GYRO_MS_BIT};
+//  uint8_t *sendData = sendToGyro;
+//  uint8_t getFromGyro = 0;
+//  uint8_t *getData = &getFromGyro;
 
 
   HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,RESET);
-  HAL_SPI_Transmit(&hspi1,sendData,1,100);
-  HAL_SPI_Transmit(&hspi1,sendData + 1,1,100);
+  HAL_SPI_Transmit(&hspi1,*pSendSPI,1,100);
+  HAL_SPI_Transmit(&hspi1,*pSendSPI + 1,1,100);
   HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,SET);
 
   uint8_t Data = 0; // Zmienna do bezposredniego odczytu z akcelerometru
   int16_t Zaxis = 0; // Zawiera przeksztalcona forme odczytanych danych
 
+  int16_t * pDataGetXAxis = &DataGetXAxis;
+  int16_t * pDataGetYAxis = &DataGetYAxis;
+  int16_t * pDataGetZAxis = &DataGetZAxis;
+
+	uint8_t DataGetAxisTemp;
+	uint8_t *pDataGetAxisTemp = &DataGetAxisTemp;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -156,11 +149,32 @@ int main(void)
 	 Zaxis |= Data;
 	 Zaxis_g = (((double)Zaxis*LSM303_ACC_RESOLUTION)/(double)INT16_MAX);
 
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,RESET);
-	HAL_SPI_Transmit(&hspi1,sendData + 2,1,100);
-	HAL_SPI_Receive(&hspi1,getData,1,100);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,SET);
-	angVelocity = (*getData)<<8;
+//	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,RESET);
+//	HAL_SPI_Transmit(&hspi1,sendData + 2,1,100);
+//	HAL_SPI_Receive(&hspi1,getData,1,100);
+//	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,SET);
+//	angVelocity = (*getData)<<8;
+
+
+		HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,RESET);
+		HAL_SPI_Transmit(&hspi1,*pSendSPI + 2,1,100);
+
+		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
+		*pDataGetXAxis = *pDataGetAxisTemp;
+		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
+		*pDataGetXAxis |= (*pDataGetAxisTemp) << 8;
+
+		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
+		*pDataGetYAxis = *pDataGetAxisTemp;
+		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
+		*pDataGetYAxis |= (*pDataGetAxisTemp)<<8;
+
+		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
+		*pDataGetZAxis = *pDataGetAxisTemp;
+		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
+		*pDataGetZAxis |= (*pDataGetAxisTemp)<<8;
+
+		HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,SET);
 
   }
   /* USER CODE END 3 */

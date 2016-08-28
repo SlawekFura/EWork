@@ -22,8 +22,7 @@
 #define LSM303_ACC_Z_H 0x2D // wyzszy bajt danych osi Z
 #define LSM303_ACC_Z_L 0x2C // nizszy bajt danych osi Z
 #define LSM303_ACC_RESOLUTION 2
-uint8_t AccSettings = LSM303_ACC_Z_ENABLE | LSM303_ACC_100HZ;
-
+uint8_t AccSettings;
 
 #define L3GD20_GYRO_CTRL_REG1 0x20 // rejestr ustawien 1
 #define L3GD20_GYRO_190HZ_25BW 0x50 // 0101 0000
@@ -38,15 +37,9 @@ uint8_t AccSettings = LSM303_ACC_Z_ENABLE | LSM303_ACC_100HZ;
 #define L3GD20_GYRO_Z_L 0x2C // wyzszy bajt danych osi Z
 #define L3GD20_GYRO_WHO_AM_I 0x0F
 
-enum {GyroSettings = L3GD20_GYRO_190HZ_25BW | L3GD20_GYRO_ENABLE | L3GD20_GYRO_ZXY_ENABLE};
-uint8_t sendToGyro[9] = {L3GD20_GYRO_CTRL_REG1 , GyroSettings,
-						L3GD20_GYRO_X_L | 128 | L3GD20_GYRO_MS_BIT,L3GD20_GYRO_X_H | 128, //multi reading
-						L3GD20_GYRO_Y_L | 128,L3GD20_GYRO_Y_H | 128,
-						L3GD20_GYRO_Z_L | 128,L3GD20_GYRO_Z_H | 128,
-						L3GD20_GYRO_WHO_AM_I | 128};
-uint8_t * pSendSPI[9] = {sendToGyro, &sendToGyro[1], &sendToGyro[2],
-						&sendToGyro[3], &sendToGyro[4], &sendToGyro[5],
-						&sendToGyro[6], &sendToGyro[7], &sendToGyro[8]};
+
+uint8_t sendToGyro[];
+uint8_t * pSendSPI[];
 
 HAL_StatusTypeDef initAccI2C(I2C_HandleTypeDef * hi2c);
 HAL_StatusTypeDef initGyroSPI(SPI_HandleTypeDef *hspi);
