@@ -130,7 +130,7 @@ int main(void)
   uint8_t sendToGyro[4]={L3GD20_CTRL_REG1_A, SettingsGyro, L3GD20_Z_H_A | 128, L3GD20_WHO_AM_I | 128};
   uint8_t *sendData = sendToGyro;
   uint8_t getFromGyro = 0;
-  uint8_t *getData;// = &getFromGyro;
+  uint8_t *getData = &getFromGyro;
 
 
   HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,RESET);
@@ -141,7 +141,6 @@ int main(void)
   uint8_t Data = 0; // Zmienna do bezposredniego odczytu z akcelerometru
   int16_t Zaxis = 0; // Zawiera przeksztalcona forme odczytanych danych
 
-  uint8_t a=0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
