@@ -38,14 +38,14 @@ HAL_StatusTypeDef initGyroSPI(SPI_HandleTypeDef *hspi){
 	return HAL_ERROR;
 }
 
-void getPositionDataACC(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint16_t *pDataGetXAxis,
-				uint16_t *pDataGetYAxis,  uint16_t *pDataGetZAxis, uint32_t Timeout){
+void getPositionDataACC(I2C_HandleTypeDef *hi2c, int16_t DevAddress, int16_t *pDataGetXAxis,
+				int16_t *pDataGetYAxis,  int16_t *pDataGetZAxis, uint32_t Timeout){
 
 
 }
 
-void getPositionDataSPI(SPI_HandleTypeDef *hspi,  uint16_t * pDataGetXAxis,
-			 	 uint16_t *pDataGetYAxis,  uint16_t *pDataGetZAxis,uint32_t Timeout){
+void getPositionDataSPI(SPI_HandleTypeDef *hspi,  int16_t * pDataGetXAxis,
+			 	 int16_t *pDataGetYAxis,  int16_t *pDataGetZAxis,uint32_t Timeout){
 	uint8_t DataGetAxisTemp;
 	uint8_t *pDataGetAxisTemp = &DataGetAxisTemp;
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,RESET);

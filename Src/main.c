@@ -119,11 +119,13 @@ int main(void)
 //  uint8_t getFromGyro = 0;
 //  uint8_t *getData = &getFromGyro;
 
+//
+//  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,RESET);
+//  HAL_SPI_Transmit(&hspi1,*pSendSPI,1,100);
+//  HAL_SPI_Transmit(&hspi1,*pSendSPI + 1,1,100);
+//  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,SET);
 
-  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,RESET);
-  HAL_SPI_Transmit(&hspi1,*pSendSPI,1,100);
-  HAL_SPI_Transmit(&hspi1,*pSendSPI + 1,1,100);
-  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,SET);
+  initGyroSPI(&hspi1);
 
   uint8_t Data = 0; // Zmienna do bezposredniego odczytu z akcelerometru
   int16_t Zaxis = 0; // Zawiera przeksztalcona forme odczytanych danych
@@ -149,32 +151,27 @@ int main(void)
 	 Zaxis |= Data;
 	 Zaxis_g = (((double)Zaxis*LSM303_ACC_RESOLUTION)/(double)INT16_MAX);
 
-//	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,RESET);
-//	HAL_SPI_Transmit(&hspi1,sendData + 2,1,100);
-//	HAL_SPI_Receive(&hspi1,getData,1,100);
-//	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,SET);
-//	angVelocity = (*getData)<<8;
-
-
-		HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,RESET);
-		HAL_SPI_Transmit(&hspi1,*pSendSPI + 2,1,100);
-
-		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
-		*pDataGetXAxis = *pDataGetAxisTemp;
-		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
-		*pDataGetXAxis |= (*pDataGetAxisTemp) << 8;
-
-		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
-		*pDataGetYAxis = *pDataGetAxisTemp;
-		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
-		*pDataGetYAxis |= (*pDataGetAxisTemp)<<8;
-
-		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
-		*pDataGetZAxis = *pDataGetAxisTemp;
-		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
-		*pDataGetZAxis |= (*pDataGetAxisTemp)<<8;
-
-		HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,SET);
+//
+//		HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,RESET);
+//		HAL_SPI_Transmit(&hspi1,*pSendSPI + 2,1,100);
+//
+//		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
+//		*pDataGetXAxis = *pDataGetAxisTemp;
+//		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
+//		*pDataGetXAxis |= (*pDataGetAxisTemp) << 8;
+//
+//		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
+//		*pDataGetYAxis = *pDataGetAxisTemp;
+//		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
+//		*pDataGetYAxis |= (*pDataGetAxisTemp)<<8;
+//
+//		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
+//		*pDataGetZAxis = *pDataGetAxisTemp;
+//		HAL_SPI_Receive(&hspi1,pDataGetAxisTemp,1,100);
+//		*pDataGetZAxis |= (*pDataGetAxisTemp)<<8;
+//
+//		HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,SET);
+	 getPositionDataSPI(&hspi1,pDataGetXAxis,pDataGetYAxis,pDataGetZAxis,100);
 
   }
   /* USER CODE END 3 */

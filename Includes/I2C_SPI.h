@@ -38,17 +38,17 @@ uint8_t AccSettings;
 #define L3GD20_GYRO_WHO_AM_I 0x0F
 
 
-uint8_t sendToGyro[];
-uint8_t * pSendSPI[];
+uint8_t sendToGyro[9];
+uint8_t * pSendSPI[9];
 
 HAL_StatusTypeDef initAccI2C(I2C_HandleTypeDef * hi2c);
 HAL_StatusTypeDef initGyroSPI(SPI_HandleTypeDef *hspi);
 
-void getPositionDataACC(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint16_t *pDataGetXAxis,\
-				uint16_t *pDataGetYAxis,  uint16_t *pDataGetZAxis, uint32_t Timeout);
+void getPositionDataACC(I2C_HandleTypeDef *hi2c, int16_t DevAddress, int16_t *pDataGetXAxis,
+				int16_t *pDataGetYAxis,  int16_t *pDataGetZAxis, uint32_t Timeout);
 
-void getPositionDataSPI(SPI_HandleTypeDef *hspi,	 uint16_t *pDataGetXAxis,\
-			 	 uint16_t *pDataGetYAxis,  uint16_t *pDataGetZAxis,uint32_t Timeout);
+void getPositionDataSPI(SPI_HandleTypeDef *hspi, int16_t *pDataGetXAxis,
+			 	 int16_t *pDataGetYAxis,  int16_t *pDataGetZAxis,uint32_t Timeout);
 
 
 
