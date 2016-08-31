@@ -1331,7 +1331,7 @@ HAL_StatusTypeDef HAL_TIM_PWM_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channe
   {
     case TIM_CHANNEL_1:
     {      
-      /* Set the DMA Period elapsed callback */
+      /* Set the DMA Period elapsed  */
       htim->hdma[TIM_DMA_ID_CC1]->XferCpltCallback = TIM_DMADelayPulseCplt;
      
       /* Set the DMA error callback */
