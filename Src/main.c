@@ -51,9 +51,9 @@ float Zaxis_g = 0;
 float retAccel = 0;
 double ang;
 int16_t angVelocity;
-int16_t DataGetXAxis;
-int16_t DataGetYAxis;
-int16_t DataGetZAxis;
+float DataGetXAxis;
+float DataGetYAxis;
+float DataGetZAxis;
 static int16_t counter = 0;
 /* USER CODE END PV */
 
@@ -129,9 +129,9 @@ int main(void)
   uint8_t Data = 0; // Zmienna do bezposredniego odczytu z akcelerometru
   int16_t Zaxis = 0; // Zawiera przeksztalcona forme odczytanych danych
 
-  int16_t * pDataGetXAxis = &DataGetXAxis;
-  int16_t * pDataGetYAxis = &DataGetYAxis;
-  int16_t * pDataGetZAxis = &DataGetZAxis;
+  float * pDataGetXAxis = &DataGetXAxis;
+  float * pDataGetYAxis = &DataGetYAxis;
+  float * pDataGetZAxis = &DataGetZAxis;
 
 	uint8_t DataGetAxisTemp;
 	uint8_t *pDataGetAxisTemp = &DataGetAxisTemp;

@@ -5,6 +5,7 @@
  *      Author: Mariusz
  */
 #include "I2C_SPI.h"
+#include <limits.h>
 
 
 uint8_t AccSettings = LSM303_ACC_Z_ENABLE | LSM303_ACC_100HZ;
@@ -40,29 +41,32 @@ HAL_StatusTypeDef initGyroSPI(SPI_HandleTypeDef *hspi){
 
 void getPositionDataACC(I2C_HandleTypeDef *hi2c, int16_t DevAddress, int16_t *pDataGetXAxis,
 				int16_t *pDataGetYAxis,  int16_t *pDataGetZAxis, uint32_t Timeout){
-
-
 }
 
-void getPositionDataSPI(SPI_HandleTypeDef *hspi,  int16_t * pDataGetXAxis,
-			 	 int16_t *pDataGetYAxis,  int16_t *pDataGetZAxis,uint32_t Timeout){
-	uint8_t DataGetAxisTemp1, DataGetAxisTemp2;
+void getPositionDataSPI(SPI_HandleTypeDef *hspi,  float * pDataGetXAxis,
+		float *pDataGetYAxis,  float *pDataGetZAxis,uint32_t Timeout){
+	uint8_t DataGetAxisTemp1;
+	int16_t DataGetAxisTemp2;
 	uint8_t *pDataGetAxisTemp1 = &DataGetAxisTemp1;
-	uint8_t *pDataGetAxisTemp2 = &DataGetAxisTemp2;
+	int16_t *pDataGetAxisTemp2 = &DataGetAxisTemp2;
+
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,RESET);
 	HAL_SPI_Transmit(hspi,*pSendSPI + 2,1,100);
 
 	HAL_SPI_Receive(hspi,pDataGetAxisTemp1,1,100);
 	HAL_SPI_Receive(hspi,pDataGetAxisTemp2,1,100);
-	*pDataGetXAxis = (*pDataGetAxisTemp2 << 8) | (*pDataGetAxisTemp1);
+	*pDataGetAxisTemp2 = ((*pDataGetAxisTemp2 << 8) | (*pDataGetAxisTemp1));
+	*pDataGetXAxis = (float)*pDataGetAxisTemp2/INT16_MAX*2*3.1415*250/360;;
 
 	HAL_SPI_Receive(hspi,pDataGetAxisTemp1,1,100);
 	HAL_SPI_Receive(hspi,pDataGetAxisTemp2,1,100);
-	*pDataGetYAxis = (*pDataGetAxisTemp2 << 8) | (*pDataGetAxisTemp1);
+	*pDataGetAxisTemp2 = ((*pDataGetAxisTemp2 << 8) | (*pDataGetAxisTemp1));
+	*pDataGetYAxis = (float)*pDataGetAxisTemp2/INT16_MAX*2*3.1415*250/360;;
 
 	HAL_SPI_Receive(hspi,pDataGetAxisTemp1,1,100);
 	HAL_SPI_Receive(hspi,pDataGetAxisTemp2,1,100);
-	*pDataGetZAxis = (*pDataGetAxisTemp2 << 8) | (*pDataGetAxisTemp1);
+	*pDataGetAxisTemp2 = ((*pDataGetAxisTemp2 << 8) | (*pDataGetAxisTemp1));
+	*pDataGetZAxis = (float)*pDataGetAxisTemp2/INT16_MAX*2*3.1415*250/360;
 
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,SET);
 }

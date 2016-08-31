@@ -47,8 +47,8 @@ HAL_StatusTypeDef initGyroSPI(SPI_HandleTypeDef *hspi);
 void getPositionDataACC(I2C_HandleTypeDef *hi2c, int16_t DevAddress, int16_t *pDataGetXAxis,
 				int16_t *pDataGetYAxis,  int16_t *pDataGetZAxis, uint32_t Timeout);
 
-void getPositionDataSPI(SPI_HandleTypeDef *hspi, int16_t *pDataGetXAxis,
-			 	 int16_t *pDataGetYAxis,  int16_t *pDataGetZAxis,uint32_t Timeout);
+void getPositionDataSPI(SPI_HandleTypeDef *hspi, float *pDataGetXAxis,
+		float *pDataGetYAxis,  float *pDataGetZAxis, uint32_t Timeout);
 
 
 
