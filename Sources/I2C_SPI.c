@@ -46,25 +46,23 @@ void getPositionDataACC(I2C_HandleTypeDef *hi2c, int16_t DevAddress, int16_t *pD
 
 void getPositionDataSPI(SPI_HandleTypeDef *hspi,  int16_t * pDataGetXAxis,
 			 	 int16_t *pDataGetYAxis,  int16_t *pDataGetZAxis,uint32_t Timeout){
-	uint8_t DataGetAxisTemp;
-	uint8_t *pDataGetAxisTemp = &DataGetAxisTemp;
+	uint8_t DataGetAxisTemp1, DataGetAxisTemp2;
+	uint8_t *pDataGetAxisTemp1 = &DataGetAxisTemp1;
+	uint8_t *pDataGetAxisTemp2 = &DataGetAxisTemp2;
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,RESET);
 	HAL_SPI_Transmit(hspi,*pSendSPI + 2,1,100);
 
-	HAL_SPI_Receive(hspi,pDataGetAxisTemp,1,100);
-	*pDataGetXAxis = *pDataGetAxisTemp;
-	HAL_SPI_Receive(hspi,pDataGetAxisTemp,1,100);
-	*pDataGetXAxis = (*pDataGetAxisTemp) << 8;
+	HAL_SPI_Receive(hspi,pDataGetAxisTemp1,1,100);
+	HAL_SPI_Receive(hspi,pDataGetAxisTemp2,1,100);
+	*pDataGetXAxis = (*pDataGetAxisTemp2 << 8) | (*pDataGetAxisTemp1);
 
-	HAL_SPI_Receive(hspi,pDataGetAxisTemp,1,100);
-	*pDataGetYAxis = *pDataGetAxisTemp;
-	HAL_SPI_Receive(hspi,pDataGetAxisTemp,1,100);
-	*pDataGetYAxis = (*pDataGetAxisTemp)<<8;
+	HAL_SPI_Receive(hspi,pDataGetAxisTemp1,1,100);
+	HAL_SPI_Receive(hspi,pDataGetAxisTemp2,1,100);
+	*pDataGetYAxis = (*pDataGetAxisTemp2 << 8) | (*pDataGetAxisTemp1);
 
-	HAL_SPI_Receive(hspi,pDataGetAxisTemp,1,100);
-	*pDataGetZAxis = *pDataGetAxisTemp;
-	HAL_SPI_Receive(hspi,pDataGetAxisTemp,1,100);
-	*pDataGetZAxis = (*pDataGetAxisTemp)<<8;
+	HAL_SPI_Receive(hspi,pDataGetAxisTemp1,1,100);
+	HAL_SPI_Receive(hspi,pDataGetAxisTemp2,1,100);
+	*pDataGetZAxis = (*pDataGetAxisTemp2 << 8) | (*pDataGetAxisTemp1);
 
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,SET);
 }
