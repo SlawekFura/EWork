@@ -47,14 +47,18 @@ TIM_HandleTypeDef htim10;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-float Zaxis_g = 0;
-float retAccel = 0;
-double ang;
-int16_t angVelocity;
-float DataGetXAxis;
-float DataGetYAxis;
-float DataGetZAxis;
-static int16_t counter = 0;
+
+
+double DataGetXAxisAcc = 0;
+double DataGetYAxisAcc = 0;
+double DataGetZAxisAcc = 0;
+
+double DataGetXAxis;
+double DataGetYAxis;
+double DataGetZAxis;
+int16_t value = 0;
+static double AngleXAxis = 0;
+static double DataGetXAxisTemp = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -75,28 +79,14 @@ static void MX_SPI1_Init(void);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
  //if(htim->Instance == TIM10){ // Jeżeli przerwanie pochodzi od timera 10
- counter++;
+AngleXAxis += ((DataGetXAxis + DataGetXAxisTemp) / 1013.5 / 2  );//*1.19 ;
+DataGetXAxisTemp = DataGetXAxis;
+value ++;
 // }
 }
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-#define LSM303_ACC_ADDRESS (0x19 << 1) // adres akcelerometru: 0011 001x
-#define LSM303_ACC_CTRL_REG1_A 0x20 // rejestr ustawien 1
-// CTRL_REG1_A = [ODR3][ODR2][ODR1][ODR0][LPEN][ZEN][YEN][XEN]
-#define LSM303_ACC_Z_ENABLE 0x04 // 0000 0100
-#define LSM303_ACC_100HZ 0x50 // 0101 0000
-#define LSM303_ACC_Z_H_A 0x2D // wyzszy bajt danych osi Z
-#define LSM303_ACC_RESOLUTION 2
-
-
-#define L3GD20_CTRL_REG1_A 0x20 // rejestr ustawien 1
-#define L3GD20_ENABLE 0x08 // 0000 0100
-#define L3GD20_Z_ENABLE 0x04 // 0000 0100
-#define L3GD20_190HZ 0x50 // 0101 0000
-#define L3GD20_Z_H_A 0x2D // wyzszy bajt danych osi Z
-#define L3GD20_WHO_AM_I 0x0F
-
 
 
 /* USER CODE END 0 */
@@ -125,16 +115,17 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim10);
   initGyroSPI(&hspi1);
+  initAccI2C(&hi2c1);
 
-  uint8_t Data = 0; // Zmienna do bezposredniego odczytu z akcelerometru
-  int16_t Zaxis = 0; // Zawiera przeksztalcona forme odczytanych danych
 
-  float * pDataGetXAxis = &DataGetXAxis;
-  float * pDataGetYAxis = &DataGetYAxis;
-  float * pDataGetZAxis = &DataGetZAxis;
+  double * pDataGetXAxis = &DataGetXAxis;
+  double * pDataGetYAxis = &DataGetYAxis;
+  double * pDataGetZAxis = &DataGetZAxis;
 
-	uint8_t DataGetAxisTemp;
-	uint8_t *pDataGetAxisTemp = &DataGetAxisTemp;
+uint8_t check_counter = 0;
+float AccPosArr[20];
+for(int i =0;i<20;i++)
+	AccPosArr[i]=0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -144,13 +135,21 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	 HAL_I2C_Mem_Read(&hi2c1, LSM303_ACC_ADDRESS, LSM303_ACC_Z_H_A, 1, &Data, 1, 100);
-	 Zaxis = Data << 8;
-	 HAL_I2C_Mem_Read(&hi2c1, LSM303_ACC_ADDRESS, LSM303_ACC_Z_H_A, 1, &Data, 1, 100);
-	 Zaxis |= Data;
-	 Zaxis_g = (((double)Zaxis*LSM303_ACC_RESOLUTION)/(double)INT16_MAX);
 
-	 getPositionDataSPI(&hspi1,pDataGetXAxis,pDataGetYAxis,pDataGetZAxis,100);
+
+	 getPositionDataACC(&hi2c1, &DataGetXAxisAcc, &DataGetYAxisAcc, &DataGetZAxisAcc,100);
+	 getPositionDataSPI(&hspi1, pDataGetXAxis, pDataGetYAxis, pDataGetZAxis,100);
+
+	 AccPosArr[check_counter] = DataGetZAxisAcc;
+	 for(uint8_t i=0;i<20;i++){
+		 if((AccPosArr[check_counter] - AccPosArr[i])>0.01 || (AccPosArr[check_counter] - AccPosArr[i])>0.01)
+			 break;
+	 	 if(i==19)
+	 		AngleXAxis = AccPosArr[check_counter];
+	 }
+
+	 check_counter++;
+	 check_counter = check_counter % 20;
 
   }
   /* USER CODE END 3 */
@@ -291,16 +290,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-double showAngle(double const var)
-{
-	if(var>1)
-		 ang = asin(1)*360/(2*3.14);
-	else if (Zaxis_g < -1)
-		 ang = asin(-1)*360/(2*3.14);
-	else
-		 ang = asin(var)*360/(2*3.14);
-	return ang;
-}
 
 //getRadDegPerSec(char * mode,int16_t *getVal){
 //	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,RESET);
