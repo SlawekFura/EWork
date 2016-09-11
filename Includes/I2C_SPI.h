@@ -13,7 +13,7 @@
 
 #define LSM303_ACC_ADDRESS (0x19 << 1) // adres akcelerometru: 0011 001x
 #define LSM303_ACC_CTRL_REG1_A 0x20 // rejestr ustawien 1
-#define LSM303_ACC_Z_ENABLE 0x04 // 0000 0100
+#define LSM303_ACC_XYZ_ENABLE 0x07 // 0000 0100
 #define LSM303_ACC_100HZ 0x50 // 0101 0000
 #define LSM303_ACC_X_H 0x29 // wyzszy bajt danych osi X
 #define LSM303_ACC_X_L 0x28 // nizszy bajt danych osi X

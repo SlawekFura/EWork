@@ -47,7 +47,7 @@ TIM_HandleTypeDef htim10;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+#define GYRO_CORRECT_ARRAY_NUM 5
 
 double DataGetXAxisAcc = 0;
 double DataGetYAxisAcc = 0;
@@ -81,7 +81,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
  //if(htim->Instance == TIM10){ // Jeżeli przerwanie pochodzi od timera 10
 AngleXAxis += ((DataGetXAxis + DataGetXAxisTemp) / 1013.5 / 2  );//*1.19 ;
 DataGetXAxisTemp = DataGetXAxis;
-value ++;
 // }
 }
 /* USER CODE END PFP */
@@ -117,14 +116,13 @@ int main(void)
   initGyroSPI(&hspi1);
   initAccI2C(&hi2c1);
 
-
   double * pDataGetXAxis = &DataGetXAxis;
   double * pDataGetYAxis = &DataGetYAxis;
   double * pDataGetZAxis = &DataGetZAxis;
 
 uint8_t check_counter = 0;
-float AccPosArr[20];
-for(int i =0;i<20;i++)
+float AccPosArr[GYRO_CORRECT_ARRAY_NUM];
+for(int i =0;i<GYRO_CORRECT_ARRAY_NUM;i++)
 	AccPosArr[i]=0;
   /* USER CODE END 2 */
 
@@ -133,23 +131,21 @@ for(int i =0;i<20;i++)
   while (1)
   {
   /* USER CODE END WHILE */
-
   /* USER CODE BEGIN 3 */
-
-
 	 getPositionDataACC(&hi2c1, &DataGetXAxisAcc, &DataGetYAxisAcc, &DataGetZAxisAcc,100);
 	 getPositionDataSPI(&hspi1, pDataGetXAxis, pDataGetYAxis, pDataGetZAxis,100);
 
-	 AccPosArr[check_counter] = DataGetZAxisAcc;
-	 for(uint8_t i=0;i<20;i++){
-		 if((AccPosArr[check_counter] - AccPosArr[i])>0.01 || (AccPosArr[check_counter] - AccPosArr[i])>0.01)
+	 AccPosArr[check_counter] = DataGetXAxisAcc;
+	 for(uint8_t i=0; i<GYRO_CORRECT_ARRAY_NUM; i++){
+		 if((AccPosArr[check_counter] - AccPosArr[i])>0.01 || (AccPosArr[check_counter] - AccPosArr[i])< -0.01)
 			 break;
-	 	 if(i==19)
+	 	 if(i == GYRO_CORRECT_ARRAY_NUM-1)
 	 		AngleXAxis = AccPosArr[check_counter];
 	 }
 
 	 check_counter++;
-	 check_counter = check_counter % 20;
+	 check_counter = check_counter % GYRO_CORRECT_ARRAY_NUM;
+	 value ++;
 
   }
   /* USER CODE END 3 */
